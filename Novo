@@ -1,125 +1,203 @@
--- ==========================================================
--- [ AIZEN SCRIPT | Blox Fruits Trade Scam UI ]
--- واجهة مشابهة للمقطع تماماً: Auto Add, Freeze Trade, Auto Accept
--- ==========================================================
-
+-- LocalScript inside StarterGui
+-- ADAM HUB - BLOX (Red Theme Edition)
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
--- إزالة الواجهة القديمة إن وجدت
-if game.CoreGui:FindFirstChild("AizenTradeScamGui") then
-    game.CoreGui.AizenTradeScamGui:Destroy()
-end
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
+-- 1. إنشاء واجهة المستخدم (GUI)
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AizenTradeScamGui"
-ScreenGui.Parent = game.CoreGui
+ScreenGui.Name = "AdamHubBlox"
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
 
+-- الإطار الرئيسي (Main Frame) - لون خلفية داكن فخم
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 260, 0, 250)
+MainFrame.Size = UDim2.new(0, 350, 0, 260)
 MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 20, 30)
+MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
-MainFrame.Draggable = true
+MainFrame.Draggable = true 
 MainFrame.Parent = ScreenGui
 
 local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 10)
 UICorner.Parent = MainFrame
 
--- شريط العنوان
-local TopBar = Instance.new("Frame")
-TopBar.Size = UDim2.new(1, 0, 0, 35)
-TopBar.BackgroundColor3 = Color3.fromRGB(35, 28, 42)
-TopBar.BorderSizePixel = 0
-TopBar.Parent = MainFrame
-
+-- عنوان الواجهة (باللون الأحمر الفخم)
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(0, 180, 1, 0)
-Title.Position = UDim2.new(0, 10, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Text = "AizenScript\nTrade Scam"
-Title.TextColor3 = Color3.fromRGB(220, 80, 100)
-Title.TextSize = 14
+Title.Size = UDim2.new(1, 0, 0, 45)
+Title.BackgroundColor3 = Color3.fromRGB(180, 20, 20) -- لون أحمر هيبة
+Title.Text = "🔥 ADAM HUB : BLOX 🔥"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
 Title.Font = Enum.Font.SourceSansBold
-Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.Parent = TopBar
+Title.Parent = MainFrame
 
--- زر إغلاق (-) أو (X)
-local CloseBtn = Instance.new("TextButton")
-CloseBtn.Size = UDim2.new(0, 25, 0, 25)
-CloseBtn.Position = UDim2.new(1, -30, 0, 5)
-CloseBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 60)
-CloseBtn.Text = "-"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextSize = 14
-CloseBtn.Font = Enum.Font.SourceSansBold
-CloseBtn.Parent = TopBar
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 10)
+TitleCorner.Parent = Title
 
-CloseBtn.MouseButton1Click:Connect(function()
-    ScreenGui:Destroy()
-end)
+-- زر تفعيل الأوتو فارم (Auto Farm Button)
+local AutoFarmBtn = Instance.new("TextButton")
+AutoFarmBtn.Size = UDim2.new(0, 280, 0, 50)
+AutoFarmBtn.Position = UDim2.new(0.1, 0, 0.23, 0)
+AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
+AutoFarmBtn.Text = "AUTO FARM: OFF"
+AutoFarmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+AutoFarmBtn.TextSize = 16
+AutoFarmBtn.Font = Enum.Font.SourceSansBold
+AutoFarmBtn.Parent = MainFrame
 
--- وظيفة إنشاء أزرار التبديل (Toggle Switches) مطابقة للصورة
-local function createToggle(name, posY, callback)
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0, 140, 0, 35)
-    label.Position = UDim2.new(0, 15, 0, posY)
-    label.BackgroundTransparency = 1
-    label.Text = name
-    label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
-    label.Font = Enum.Font.SourceSansBold
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = MainFrame
+local BtnCorner = Instance.new("UICorner")
+BtnCorner.CornerRadius = UDim.new(0, 8)
+BtnCorner.Parent = AutoFarmBtn
 
-    local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0, 55, 0, 26)
-    toggleBtn.Position = UDim2.new(1, -70, 0, posY + 5)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 60, 80)
-    toggleBtn.Text = ""
-    toggleBtn.Parent = MainFrame
+-- زر تفعيل الطيران (Fly Button)
+local FlyBtn = Instance.new("TextButton")
+FlyBtn.Size = UDim2.new(0, 280, 0, 50)
+FlyBtn.Position = UDim2.new(0.1, 0, 0.52, 0)
+FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+FlyBtn.Text = "FLY MODE: OFF"
+FlyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlyBtn.TextSize = 16
+FlyBtn.Font = Enum.Font.SourceSansBold
+FlyBtn.Parent = MainFrame
 
-    local tCorner = Instance.new("UICorner")
-    tCorner.CornerRadius = UDim.new(1, 0)
-    tCorner.Parent = toggleBtn
+local BtnCorner2 = Instance.new("UICorner")
+BtnCorner2.CornerRadius = UDim.new(0, 8)
+BtnCorner2.Parent = FlyBtn
 
-    local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 20, 0, 20)
-    circle.Position = UDim2.new(0, 3, 0, 3)
-    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    circle.Parent = toggleBtn
+-- التسمية التوضيحية
+local Credits = Instance.new("TextLabel")
+Credits.Size = UDim2.new(1, 0, 0, 30)
+Credits.Position = UDim2.new(0, 0, 0.82, 0)
+Credits.BackgroundTransparency = 1
+Credits.Text = "Made by ADAM HUB | Press 'K' to Hide/Show"
+Credits.TextColor3 = Color3.fromRGB(200, 200, 200)
+Credits.TextSize = 12
+Credits.Parent = MainFrame
 
-    local cCorner = Instance.new("UICorner")
-    cCorner.CornerRadius = UDim.new(1, 0)
-    cCorner.Parent = circle
+----------------- منطق السكربت (Script Logic) -----------------
 
-    local state = false
-    toggleBtn.MouseButton1Click:Connect(function()
-        state = not state
-        if state then
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
-            circle:TweenPosition(UDim2.new(1, -23, 0, 3), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
-        else
-            toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 60, 80)
-            circle:TweenPosition(UDim2.new(0, 3, 0, 3), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
-        end
-        callback(state)
-    end)
+local autoFarm = false
+local flying = false
+local flySpeed = 60
+local bv, bg
+
+-- دالة إيجاد أقرب وحش
+local function getEnemy()
+	local target = nil
+	local maxDist = math.huge
+	for _, v in pairs(workspace:GetChildren()) do
+		if v:IsA("Model") and v.Name == "Enemy" and v:FindFirstChild("HumanoidRootPart") then
+			local hum = v:FindFirstChild("Humanoid")
+			if hum and hum.Health > 0 then
+				local dist = (v.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+				if dist < maxDist then
+					maxDist = dist
+					target = v
+				end
+			end
+		end
+	end
+	return target
 end
 
--- إنشاء الأزرار الثلاثة الموجودة في الفيديو والصورة
-createToggle("Auto Add Fruits", 50, function(state)
-    print("Auto Add Fruits:", state)
+-- تشغيل الأوتو فارم
+task.spawn(function()
+	while true do
+		task.wait(0.1)
+		if autoFarm and character and character:FindFirstChild("HumanoidRootPart") then
+			local enemy = getEnemy()
+			if enemy then
+				character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
+				local tool = character:FindFirstChildOfClass("Tool")
+				if tool then
+					tool:Activate()
+				end
+			end
+		end
+	end
 end)
 
-createToggle("Freeze Trade", 110, function(state)
-    print("Freeze Trade:", state)
+-- تفعيل / إيقاف الأوتو فارم
+AutoFarmBtn.MouseButton1Click:Connect(function()
+	autoFarm = not autoFarm
+	if autoFarm then
+		AutoFarmBtn.Text = "AUTO FARM: ON"
+		AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 20) -- أحمر ساطع يدل على التشغيل
+	else
+		AutoFarmBtn.Text = "AUTO FARM: OFF"
+		AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
+	end
 end)
 
-createToggle("Auto Accept", 170, function(state)
-    print("Auto Accept:", state)
+-- تشغيل وإيقاف الطيران
+local function toggleFly()
+	flying = not flying
+	if flying then
+		FlyBtn.Text = "FLY MODE: ON"
+		FlyBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 20)
+		
+		local hrp = character:WaitForChild("HumanoidRootPart")
+		character.Humanoid.PlatformStand = true
+		
+		bv = Instance.new("BodyVelocity")
+		bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+		bv.Velocity = Vector3.new(0,0,0)
+		bv.Parent = hrp
+		
+		bg = Instance.new("BodyGyro")
+		bv.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+		bg.CFrame = hrp.CFrame
+		bg.Parent = hrp
+		
+		task.spawn(function()
+			while flying do
+				RunService.RenderStepped:Wait()
+				local cam = workspace.CurrentCamera
+				local dir = Vector3.new(0,0,0)
+				
+				if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
+				if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
+				if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
+				if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
+				
+				bv.Velocity = dir.Unit * flySpeed
+				if dir == Vector3.new(0,0,0) then bv.Velocity = Vector3.new(0,0,0) end
+				bg.CFrame = cam.CFrame
+			end
+		end)
+	else
+		FlyBtn.Text = "FLY MODE: OFF"
+		FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+		character.Humanoid.PlatformStand = false
+		if bv then bv:Destroy() end
+		if bg then bg:Destroy() end
+	end
+end
+
+FlyBtn.MouseButton1Click:Connect(toggleFly)
+
+-- إخفاء وإظهار الـ GUI بضغط زر K
+UserInputService.InputBegan:Connect(function(input, processed)
+	if processed then return end
+	if input.KeyCode == Enum.KeyCode.K then
+		MainFrame.Visible = not MainFrame.Visible
+	end
 end)
 
-print("AizenScript Trade Scam Loaded Successfully!")
+-- تحديث اللاعب عند الموت
+player.CharacterAdded:Connect(function(char)
+	character = char
+	autoFarm = false
+	flying = false
+	AutoFarmBtn.Text = "AUTO FARM: OFF"
+	AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
+	FlyBtn.Text = "FLY MODE: OFF"
+	FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+end)
