@@ -1,0 +1,125 @@
+-- ==========================================================
+-- [ AIZEN SCRIPT | Blox Fruits Trade Scam UI ]
+-- واجهة مشابهة للمقطع تماماً: Auto Add, Freeze Trade, Auto Accept
+-- ==========================================================
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- إزالة الواجهة القديمة إن وجدت
+if game.CoreGui:FindFirstChild("AizenTradeScamGui") then
+    game.CoreGui.AizenTradeScamGui:Destroy()
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AizenTradeScamGui"
+ScreenGui.Parent = game.CoreGui
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 260, 0, 250)
+MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 20, 30)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- شريط العنوان
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+TopBar.BackgroundColor3 = Color3.fromRGB(35, 28, 42)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(0, 180, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "AizenScript\nTrade Scam"
+Title.TextColor3 = Color3.fromRGB(220, 80, 100)
+Title.TextSize = 14
+Title.Font = Enum.Font.SourceSansBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
+
+-- زر إغلاق (-) أو (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.Position = UDim2.new(1, -30, 0, 5)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 60)
+CloseBtn.Text = "-"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.Parent = TopBar
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- وظيفة إنشاء أزرار التبديل (Toggle Switches) مطابقة للصورة
+local function createToggle(name, posY, callback)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0, 140, 0, 35)
+    label.Position = UDim2.new(0, 15, 0, posY)
+    label.BackgroundTransparency = 1
+    label.Text = name
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 14
+    label.Font = Enum.Font.SourceSansBold
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = MainFrame
+
+    local toggleBtn = Instance.new("TextButton")
+    toggleBtn.Size = UDim2.new(0, 55, 0, 26)
+    toggleBtn.Position = UDim2.new(1, -70, 0, posY + 5)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 60, 80)
+    toggleBtn.Text = ""
+    toggleBtn.Parent = MainFrame
+
+    local tCorner = Instance.new("UICorner")
+    tCorner.CornerRadius = UDim.new(1, 0)
+    tCorner.Parent = toggleBtn
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 20, 0, 20)
+    circle.Position = UDim2.new(0, 3, 0, 3)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.Parent = toggleBtn
+
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(1, 0)
+    cCorner.Parent = circle
+
+    local state = false
+    toggleBtn.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(220, 60, 100)
+            circle:TweenPosition(UDim2.new(1, -23, 0, 3), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
+        else
+            toggleBtn.BackgroundColor3 = Color3.fromRGB(70, 60, 80)
+            circle:TweenPosition(UDim2.new(0, 3, 0, 3), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
+        end
+        callback(state)
+    end)
+end
+
+-- إنشاء الأزرار الثلاثة الموجودة في الفيديو والصورة
+createToggle("Auto Add Fruits", 50, function(state)
+    print("Auto Add Fruits:", state)
+end)
+
+createToggle("Freeze Trade", 110, function(state)
+    print("Freeze Trade:", state)
+end)
+
+createToggle("Auto Accept", 170, function(state)
+    print("Auto Accept:", state)
+end)
+
+print("AizenScript Trade Scam Loaded Successfully!")
