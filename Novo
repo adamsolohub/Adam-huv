@@ -1,120 +1,198 @@
--- LocalScript inside StarterGui
--- ADAM HUB - BLOX (Red Theme Edition)
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+-- LocalScript inside StarterGui -> AdamHub
+local Players = game:Service("Players")
+local TweenService = game:Service("TweenService")
+local RunService = game:Service("RunService")
+local UserInputService = game:Service("UserInputService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 
--- 1. إنشاء واجهة المستخدم (GUI)
+-- إنشاء الواجهة الرئيسية
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "AdamHubBlox"
+ScreenGui.Name = "AdamHubGui"
 ScreenGui.Parent = player:WaitForChild("PlayerGui")
 ScreenGui.ResetOnSpawn = false
 
--- الإطار الرئيسي (Main Frame) - لون خلفية داكن فخم
+-- زر فتح/إغلاق عائم (مهم بزاف للهواتف بحال Redz)
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.15, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+ToggleButton.Text = "ADAM"
+ToggleButton.TextColor3 = Color3.fromRGB(0, 255, 204)
+ToggleButton.TextSize = 14
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Parent = ScreenGui
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(1, 0) -- دائري كامل
+ToggleCorner.Parent = ToggleButton
+
+local ToggleStroke = Instance.new("UIStroke")
+ToggleStroke.Color = Color3.fromRGB(0, 255, 204)
+ToggleStroke.Width = 2
+ToggleStroke.Parent = ToggleButton
+
+-- الإطار الرئيسي (Main Frame)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 350, 0, 260)
-MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+MainFrame.Size = UDim2.new(0, 420, 0, 280)
+MainFrame.Position = UDim2.new(0.3, 0, 0.25, 0)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
 MainFrame.BorderSizePixel = 0
+MainFrame.Visible = false
 MainFrame.Active = true
-MainFrame.Draggable = true 
+MainFrame.Draggable = true
 MainFrame.Parent = ScreenGui
 
-local UICorner = Instance.new("UICorner")
-UICorner.CornerRadius = UDim.new(0, 10)
-UICorner.Parent = MainFrame
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 12)
+MainCorner.Parent = MainFrame
 
--- عنوان الواجهة (باللون الأحمر الفخم)
+-- شريط العنوان العلوي
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 45)
+Header.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+Header.BorderSizePixel = 0
+Header.Parent = MainFrame
+
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 12)
+HeaderCorner.Parent = Header
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 45)
-Title.BackgroundColor3 = Color3.fromRGB(180, 20, 20) -- لون أحمر هيبة
-Title.Text = "🔥 ADAM HUB : BLOX 🔥"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Size = UDim2.new(0.7, 0, 1, 0)
+Title.Position = UDim2.new(0.05, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "ADAM HUB V1 | Blox Fruits Edition"
+Title.TextColor3 = Color3.fromRGB(0, 255, 204)
 Title.TextSize = 18
-Title.Font = Enum.Font.SourceSansBold
-Title.Parent = MainFrame
+Title.Font = Enum.Font.GothamBold
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Header
 
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 10)
-TitleCorner.Parent = Title
+-- شريط الأقسام (Tabs Container)
+local TabContainer = Instance.new("Frame")
+TabContainer.Size = UDim2.new(0, 100, 0, 225)
+TabContainer.Position = UDim2.new(0, 5, 0, 50)
+TabContainer.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+TabContainer.BorderSizePixel = 0
+TabContainer.Parent = MainFrame
 
--- زر تفعيل الأوتو فارم (Auto Farm Button)
-local AutoFarmBtn = Instance.new("TextButton")
-AutoFarmBtn.Size = UDim2.new(0, 280, 0, 50)
-AutoFarmBtn.Position = UDim2.new(0.1, 0, 0.23, 0)
-AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
-AutoFarmBtn.Text = "AUTO FARM: OFF"
-AutoFarmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-AutoFarmBtn.TextSize = 16
-AutoFarmBtn.Font = Enum.Font.SourceSansBold
-AutoFarmBtn.Parent = MainFrame
+local TabCorner = Instance.new("UICorner")
+TabCorner.CornerRadius = UDim.new(0, 8)
+TabCorner.Parent = TabContainer
 
-local BtnCorner = Instance.new("UICorner")
-BtnCorner.CornerRadius = UDim.new(0, 8)
-BtnCorner.Parent = AutoFarmBtn
+-- الأزرار ديال الأقسام (Tabs Buttons)
+local FarmTabBtn = Instance.new("TextButton")
+FarmTabBtn.Size = UDim2.new(1, -10, 0, 35)
+FarmTabBtn.Position = UDim2.new(0, 5, 0, 10)
+FarmTabBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 204)
+FarmTabBtn.Text = "Auto Farm"
+FarmTabBtn.TextColor3 = Color3.fromRGB(15, 15, 22)
+FarmTabBtn.TextSize = 14
+FarmTabBtn.Font = Enum.Font.GothamBold
+FarmTabBtn.Parent = TabContainer
 
--- زر تفعيل الطيران (Fly Button)
-local FlyBtn = Instance.new("TextButton")
-FlyBtn.Size = UDim2.new(0, 280, 0, 50)
-FlyBtn.Position = UDim2.new(0.1, 0, 0.52, 0)
-FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
-FlyBtn.Text = "FLY MODE: OFF"
-FlyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-FlyBtn.TextSize = 16
-FlyBtn.Font = Enum.Font.SourceSansBold
-FlyBtn.Parent = MainFrame
+local FarmTabBtnCorner = Instance.new("UICorner")
+FarmTabBtnCorner.CornerRadius = UDim.new(0, 6)
+FarmTabBtnCorner.Parent = FarmTabBtn
 
-local BtnCorner2 = Instance.new("UICorner")
-BtnCorner2.CornerRadius = UDim.new(0, 8)
-BtnCorner2.Parent = FlyBtn
+-- حاوية الصفحات (Pages Container)
+local Pages = Instance.new("Frame")
+Pages.Size = UDim2.new(0, 305, 0, 225)
+Pages.Position = UDim2.new(0, 110, 0, 50)
+Pages.BackgroundTransparency = 1
+Pages.Parent = MainFrame
 
--- التسمية التوضيحية
-local Credits = Instance.new("TextLabel")
-Credits.Size = UDim2.new(1, 0, 0, 30)
-Credits.Position = UDim2.new(0, 0, 0.82, 0)
-Credits.BackgroundTransparency = 1
-Credits.Text = "Made by ADAM HUB | Press 'K' to Hide/Show"
-Credits.TextColor3 = Color3.fromRGB(200, 200, 200)
-Credits.TextSize = 12
-Credits.Parent = MainFrame
+-- صفحة الفارمنغ (Farm Page)
+local FarmPage = Instance.new("Frame")
+FarmPage.Size = UDim2.new(1, 0, 1, 0)
+FarmPage.BackgroundTransparency = 1
+FarmPage.Parent = Pages
 
------------------ منطق السكربت (Script Logic) -----------------
+-- زر تشغيل الأوتوفارم
+local AutoFarmToggle = Instance.new("TextButton")
+AutoFarmToggle.Size = UDim2.new(0, 280, 0, 45)
+AutoFarmToggle.Position = UDim2.new(0, 10, 0, 20)
+AutoFarmToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+AutoFarmToggle.Text = "Auto Farm Level: OFF"
+AutoFarmToggle.TextColor3 = Color3.fromRGB(255, 60, 60)
+AutoFarmToggle.TextSize = 14
+AutoFarmToggle.Font = Enum.Font.GothamBold
+AutoFarmToggle.Parent = FarmPage
 
-local autoFarm = false
-local flying = false
-local flySpeed = 60
-local bv, bg
+local ToggleBtnCorner = Instance.new("UICorner")
+ToggleBtnCorner.CornerRadius = UDim.new(0, 8)
+ToggleBtnCorner.Parent = AutoFarmToggle
 
--- دالة إيجاد أقرب وحش
-local function getEnemy()
-	local target = nil
-	local maxDist = math.huge
+-- زر أوتو ستات (Auto Stats)
+local AutoStatsToggle = Instance.new("TextButton")
+AutoStatsToggle.Size = UDim2.new(0, 280, 0, 45)
+AutoStatsToggle.Position = UDim2.new(0, 10, 0, 80)
+AutoStatsToggle.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+AutoStatsToggle.Text = "Auto Stats (Melee): OFF"
+AutoStatsToggle.TextColor3 = Color3.fromRGB(255, 60, 60)
+AutoStatsToggle.TextSize = 14
+AutoStatsToggle.Font = Enum.Font.GothamBold
+AutoStatsToggle.Parent = FarmPage
+
+local StatsCorner = Instance.new("UICorner")
+StatsCorner.CornerRadius = UDim.new(0, 8)
+StatsCorner.Parent = AutoStatsToggle
+
+-- زر الانتقال السريع (Teleport to Island)
+local TeleportBtn = Instance.new("TextButton")
+TeleportBtn.Size = UDim2.new(0, 280, 0, 45)
+TeleportBtn.Position = UDim2.new(0, 10, 0, 140)
+TeleportBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+TeleportBtn.Text = "Teleport to Starter Island"
+TeleportBtn.TextColor3 = Color3.fromRGB(0, 180, 255)
+TeleportBtn.TextSize = 14
+TeleportBtn.Font = Enum.Font.GothamBold
+TeleportBtn.Parent = FarmPage
+
+local TpCorner = Instance.new("UICorner")
+TpCorner.CornerRadius = UDim.new(0, 8)
+TpCorner.Parent = TeleportBtn
+
+------------------ الخدمة والتحكم (Logics) ------------------
+
+local isFarming = false
+local isStatsOn = false
+
+-- فتح وإغلاق القائمة بالزر العائم
+ToggleButton.MouseButton1Click:Connect(function()
+	MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- كود إيجاد أقرب وحش
+local function getClosestEnemy()
+	local closest = nil
+	local dist = math.huge
 	for _, v in pairs(workspace:GetChildren()) do
 		if v:IsA("Model") and v.Name == "Enemy" and v:FindFirstChild("HumanoidRootPart") then
-			local hum = v:FindFirstChild("Humanoid")
-			if hum and hum.Health > 0 then
-				local dist = (v.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
-				if dist < maxDist then
-					maxDist = dist
-					target = v
+			if v.Humanoid and v.Humanoid.Health > 0 then
+				local d = (v.HumanoidRootPart.Position - character.HumanoidRootPart.Position).Magnitude
+				if d < dist then
+					dist = d
+					closest = v
 				end
 			end
 		end
 	end
-	return target
+	return closest
 end
 
--- تشغيل الأوتو فارم
+-- الأوتو فارم (Auto Farm Engine)
 task.spawn(function()
 	while true do
 		task.wait(0.1)
-		if autoFarm and character and character:FindFirstChild("HumanoidRootPart") then
-			local enemy = getEnemy()
+		if isFarming and character and character:FindFirstChild("HumanoidRootPart") then
+			local enemy = getClosestEnemy()
 			if enemy then
+				-- كيطير فوق الوحش بحال السكربتات المحترفة باش ما يضربكش
 				character.HumanoidRootPart.CFrame = enemy.HumanoidRootPart.CFrame * CFrame.new(0, 6, 0)
+				-- يضرب تلقائيا بالسلاح اللي هاز
 				local tool = character:FindFirstChildOfClass("Tool")
 				if tool then
 					tool:Activate()
@@ -124,80 +202,53 @@ task.spawn(function()
 	end
 end)
 
--- تفعيل / إيقاف الأوتو فارم
-AutoFarmBtn.MouseButton1Click:Connect(function()
-	autoFarm = not autoFarm
-	if autoFarm then
-		AutoFarmBtn.Text = "AUTO FARM: ON"
-		AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 20) -- أحمر ساطع يدل على التشغيل
+-- تشغيل/توقيف الأوتو فارم من الزر
+AutoFarmToggle.MouseButton1Click:Connect(function()
+	isFarming = not isFarming
+	if isFarming then
+		AutoFarmToggle.Text = "Auto Farm Level: ON"
+		AutoFarmToggle.TextColor3 = Color3.fromRGB(0, 255, 100)
 	else
-		AutoFarmBtn.Text = "AUTO FARM: OFF"
-		AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
+		AutoFarmToggle.Text = "Auto Farm Level: OFF"
+		AutoFarmToggle.TextColor3 = Color3.fromRGB(255, 60, 60)
 	end
 end)
 
--- تشغيل وإيقاف الطيران
-local function toggleFly()
-	flying = not flying
-	if flying then
-		FlyBtn.Text = "FLY MODE: ON"
-		FlyBtn.BackgroundColor3 = Color3.fromRGB(220, 20, 20)
-		
-		local hrp = character:WaitForChild("HumanoidRootPart")
-		character.Humanoid.PlatformStand = true
-		
-		bv = Instance.new("BodyVelocity")
-		bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
-		bv.Velocity = Vector3.new(0,0,0)
-		bv.Parent = hrp
-		
-		bg = Instance.new("BodyGyro")
-		bv.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
-		bg.CFrame = hrp.CFrame
-		bg.Parent = hrp
-		
-		task.spawn(function()
-			while flying do
-				RunService.RenderStepped:Wait()
-				local cam = workspace.CurrentCamera
-				local dir = Vector3.new(0,0,0)
-				
-				if UserInputService:IsKeyDown(Enum.KeyCode.W) then dir = dir + cam.CFrame.LookVector end
-				if UserInputService:IsKeyDown(Enum.KeyCode.S) then dir = dir - cam.CFrame.LookVector end
-				if UserInputService:IsKeyDown(Enum.KeyCode.A) then dir = dir - cam.CFrame.RightVector end
-				if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir = dir + cam.CFrame.RightVector end
-				
-				bv.Velocity = dir.Unit * flySpeed
-				if dir == Vector3.new(0,0,0) then bv.Velocity = Vector3.new(0,0,0) end
-				bg.CFrame = cam.CFrame
-			end
-		end)
+-- تشغيل/توقيف الأوتو ستات (Auto Stats)
+AutoStatsToggle.MouseButton1Click:Connect(function()
+	isStatsOn = not isStatsOn
+	if isStatsOn then
+		AutoStatsToggle.Text = "Auto Stats (Melee): ON"
+		AutoStatsToggle.TextColor3 = Color3.fromRGB(0, 255, 100)
 	else
-		FlyBtn.Text = "FLY MODE: OFF"
-		FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
-		character.Humanoid.PlatformStand = false
-		if bv then bv:Destroy() end
-		if bg then bg:Destroy() end
-	end
-end
-
-FlyBtn.MouseButton1Click:Connect(toggleFly)
-
--- إخفاء وإظهار الـ GUI بضغط زر K
-UserInputService.InputBegan:Connect(function(input, processed)
-	if processed then return end
-	if input.KeyCode == Enum.KeyCode.K then
-		MainFrame.Visible = not MainFrame.Visible
+		AutoStatsToggle.Text = "Auto Stats (Melee): OFF"
+		AutoStatsToggle.TextColor3 = Color3.fromRGB(255, 60, 60)
 	end
 end)
 
--- تحديث اللاعب عند الموت
+-- كود زيادة لفل النقاط تلقائياً (Auto Stats Engine)
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if isStatsOn then
+			local stats = player:FindFirstChild("leaderstats")
+			-- هنا كيزيد النقط فالميلي يلا كان هاد السيستيم فلعبتك
+			-- تقدر تبدلو على حساب أسميات الـ Stats اللي عندك
+		end
+	end
+end)
+
+-- الانتقال السريع (Teleport)
+TeleportBtn.MouseButton1Click:Connect(function()
+	if character and character:FindFirstChild("HumanoidRootPart") then
+		-- تيليپورت لشي بلاصة فخريطة اللعبة ديالك (مثلا النقطة 0, 100, 0)
+		character.HumanoidRootPart.CFrame = CFrame.new(0, 50, 0)
+	end
+end)
+
+-- إعادة التحديث عند الموت
 player.CharacterAdded:Connect(function(char)
 	character = char
-	autoFarm = false
-	flying = false
-	AutoFarmBtn.Text = "AUTO FARM: OFF"
-	AutoFarmBtn.BackgroundColor3 = Color3.fromRGB(140, 20, 20)
-	FlyBtn.Text = "FLY MODE: OFF"
-	FlyBtn.BackgroundColor3 = Color3.fromRGB(100, 20, 20)
+	isFarming = false
+	isStatsOn = false
 end)
